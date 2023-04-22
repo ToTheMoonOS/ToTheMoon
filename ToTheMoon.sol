@@ -250,10 +250,11 @@ contract Moon{
     // Private variable holding the name of the token.
     string private moonName = "Moon";
     address private  teamAddress;
-    uint256 public reserveIn = 10000e18;
+    uint256 public reserveIn = 1000e18;
     uint256 public reserveOut = 1000000e18;
-    uint256 public num = 10000010000010001;
-    uint256 public cycleprice = 10000e18;
+    uint256 public num = 1000001000001001;
+    uint256 public cycleprice = 1000e18;
+    bool private _locked;
 
 
     /**
@@ -331,7 +332,7 @@ contract Moon{
         bool billboardStatus;
     }
     // A mapping to store the winner's address for each cycle
-    mapping(uint256 => address) public cycleInfo; 
+    mapping(uint256 => address) public cycleInfo;
     // A mapping associates a string (billboard name) to an address representing the owner of the billboard.
     mapping(string => address) public UserBillboard;
     // A mapping that stores the address of the user's billboard based on its hash value
@@ -344,10 +345,10 @@ contract Moon{
     mapping(address => UserInfo) public Users;
 
     // A mapping that stores the announcement information based on the announcement
- 
+
     mapping(string => AnnouncementInfo) public Announcement;
     // A mapping that stores the fee information based on the fee name
- 
+
     mapping(string => FeeInfo) public Fee;
     // A mapping that stores the balance information based on the balance name
     mapping(string => BalanceInfo) public Balance;
@@ -368,7 +369,7 @@ contract Moon{
         Fee[moonName].everyoneRewardsFee = FeeSetting_[4];
         Fee[moonName].cycleFee = FeeSetting_[5];
         require(FeeSetting_[0]+FeeSetting_[1]+FeeSetting_[2]+FeeSetting_[3]+FeeSetting_[4]+FeeSetting_[5] == 100,"ERROR");
-        Announcement[moonName].billboardPrice = 1e18;
+        Announcement[moonName].billboardPrice = 1e17;
         cycle = 1;
         gasForProcessing = gasForProcessing_;
 
@@ -387,7 +388,10 @@ contract Moon{
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(msg.value == getAmountIn(_quantitys),"PRICE ERROR");
         require(bytes(_billboardName).length < 100,"LENGTH ERROR");
-  
+        require(!_locked, "Function is locked");
+
+         _locked = true;
+
         if(endTime != 0 && startTime != 0){
             require(block.timestamp < endTime,"TIME ERROR");
         }
@@ -412,7 +416,7 @@ contract Moon{
         Announcement[moonName].GameDefiCount += _quantitys;
         Announcement[moonName].newBuyAddress = msg.sender;
         Announcement[moonName].queryCount = _quantitys;
-
+        _locked = false;
     }
 
     /**
@@ -460,7 +464,7 @@ contract Moon{
         Announcement[moonName].GameDefiCount += _quantity;
     }
 
-  
+
     // This function allows a user to withdraw their partner rewards
     function getPartnerRewards() external{
         require(Users[msg.sender].partnerRewards  > 0,"ERROR");
@@ -536,7 +540,7 @@ contract Moon{
         }
     }
 
-    
+
     /**
     @dev Calculates the price for buying a new billboard based on the current number of billboards.
     @return The price of the new billboard in wei.
@@ -731,7 +735,7 @@ contract Moon{
             endTime += 1 hours;
         }
     }
-  
+
     function getUserAll() public view returns(uint256){
         if(Announcement[moonName].GameDefiCount > 1000){
             return 0;
@@ -739,7 +743,7 @@ contract Moon{
             return  1000 - Announcement[moonName].GameDefiCount;
         }
     }
-    
+
     function getTheMoon() public view returns(bool){
         if(Announcement[moonName].theMoon != 0){
             return false;
@@ -755,7 +759,7 @@ contract Moon{
         payable(msg.sender).transfer(sr);
     }
 
-  
+
     function ToMoon() public view returns(address){
         return cycleInfo[cycle - 1];
     }
@@ -782,10 +786,11 @@ contract Moon{
     }
     // This function generates a random number between 0 and 100 (inclusive) using the block timestamp and the previous randao value as the seed
     // It uses the keccak256 hash function to generate a pseudo-random value from the seed, and then takes the modulo 101 to get a value between 0 and 100.
-    function rand() public view returns(uint8) {
+    function rand() public view returns(uint256) {
         bytes32 blockHash = blockhash(block.number - 1);
         bytes32 seed = keccak256(abi.encodePacked(block.timestamp, blockHash));
-        uint8 random = uint8(uint256(seed) % 101);
+        uint256 random = uint256(keccak256(abi.encodePacked(seed, blockhash(block.number - 1))));
+        random = random % 101;
         return random;
     }
 
@@ -801,13 +806,13 @@ contract Moon{
     }
 
     function cycleStake() internal {
-          reserveIn = cycleprice + (100e18 * cycle);
-          reserveOut = 1000000e18 ;
-          uint256 newnum = (num * 2e8) / 10e8 + num;
-          cycleprice = reserveIn;
-          num = newnum;
+        reserveIn = cycleprice + (100e18 * cycle);
+        reserveOut = 1000000e18 ;
+        uint256 newnum = (num * 2e8) / 10e8 + num;
+        cycleprice = reserveIn;
+        num = newnum;
     }
-  
+
     function getAmountIn(uint256 _quantitys) public view returns (uint256) {
         uint256 amountOut = _quantitys * 1e18;
         require(amountOut > 0, "PancakeLibrary: INSUFFICIENT_OUTPUT_AMOUNT");
@@ -832,7 +837,7 @@ contract Moon{
             reserveIn = reserveIn.div(20).mul(13);
         }
     }
-   
+
     function buyKey(uint256 _quantitys) internal {
         if_quantitys();
         uint256 money = getAmountIn(_quantitys);

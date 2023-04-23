@@ -255,6 +255,7 @@ contract Moon{
     uint256 public num = 1000001000001001;
     uint256 public cycleprice = 1000e18;
     bool private _locked;
+    bool private _lockedTwo;
 
 
     /**
@@ -396,7 +397,7 @@ contract Moon{
             require(block.timestamp < endTime,"TIME ERROR");
         }
         uint256 currentTimestamp = block.timestamp;
-        uint256 quantitysTokenAmount = 1e18 * _quantitys;
+        //uint256 quantitysTokenAmount = 1e18 * _quantitys;
 
         if(Announcement[moonName].GameDefiCount + _quantitys > 999 && startTime == 0 && endTime == 0){
             startTime = currentTimestamp;
@@ -410,12 +411,13 @@ contract Moon{
         if(partnerAddress != address(0)){
             Users[msg.sender].partnerAddress = partnerAddress;
         }
-        dividends();
         buyKey(_quantitys);
-        GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
         Announcement[moonName].GameDefiCount += _quantitys;
         Announcement[moonName].newBuyAddress = msg.sender;
         Announcement[moonName].queryCount = _quantitys;
+        dividends(_quantitys);
+        // uint256 quantitysTokenAmount = 1e18 * _quantitys;
+        // GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
         _locked = false;
     }
 
@@ -424,6 +426,8 @@ contract Moon{
     @param BillboardName The name of the billboard the user wishes to stake tokens towards
     */
     function reinvestmentIncome(string memory BillboardName) external{
+        require(!_lockedTwo, "Function is locked");
+         _lockedTwo = true;
         if(endTime != 0 && startTime != 0){
             require(block.timestamp < endTime,"TIME ERROR");
         }
@@ -438,6 +442,7 @@ contract Moon{
         Announcement[moonName].queryCount = _quantity;
         getAmountIn(_quantity);
         getreinvestmentIncome(BillboardName,_quantity);
+        _lockedTwo = false;
     }
 
     /**
@@ -460,8 +465,8 @@ contract Moon{
             Users[msg.sender].partnerAddress = UserBillboardHash[collisionHash];
         }
         dividend(_quantity);
-        GameToken(Announcement[moonName].GameTokenAddress).mintToken((msg.sender), 1e18 * _quantity);
-        Announcement[moonName].GameDefiCount += _quantity;
+        // GameToken(Announcement[moonName].GameTokenAddress).mintToken((msg.sender), 1e18 * _quantity);
+        // Announcement[moonName].GameDefiCount += _quantity;
     }
 
 
@@ -530,9 +535,9 @@ contract Moon{
         if(Announcement[moonName].billboardCount != 0){
             Announcement[moonName].billboardCount++;
             uint256 userbounty = (msg.value * 9e8) / 10e9;
+            Announcement[moonName].billboardPrice = newPrice;
             payable(lastAddress).transfer(msg.value - userbounty);
             payable(teamAddress).transfer(userbounty);
-            Announcement[moonName].billboardPrice = newPrice;
         }else{
             Announcement[moonName].billboardCount++;
             Announcement[moonName].billboardPrice = newPrice;
@@ -626,12 +631,6 @@ contract Moon{
         Balance[moonName].cycleBalance += cycleFeeAmount / FIXED_POINT;
         Balance[moonName].everyoneBalance += everyoneRewardsAmount / FIXED_POINT;
 
-        payable(teamAddress).transfer(teamFee / FIXED_POINT);
-        if (Users[msg.sender].partnerAddress == address(0)) {
-            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
-        } else {
-            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
-        }
         if(Announcement[moonName].queryCount!=0){
             GameToken(Announcement[moonName].GameTokenAddress).distributeCAKEDividends(everyoneRewardsAmount / FIXED_POINT);
         }else{
@@ -645,12 +644,19 @@ contract Moon{
             Announcement[moonName].SMRewardsAddress = msg.sender;
             Announcement[moonName].SmRewardCount = smallRewardCount;
         }
-
         Announcement[moonName].SMcount++;
+        uint256 quantitysTokenAmount = 1e18 * _quantitys;
+        GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
+        payable(teamAddress).transfer(teamFee / FIXED_POINT);
+        if (Users[msg.sender].partnerAddress == address(0)) {
+            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
+        } else {
+            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
+        }
     }
 
 
-    function dividends() internal {
+    function dividends(uint256 _quantity) internal {
         uint256 teamRewardsFee = Fee[moonName].teamRewardsFee;
         uint256 partnerRewardsFee = Fee[moonName].partnerRewardsFee;
         uint256 superJackpotFee = Fee[moonName].superJackpotFee;
@@ -669,12 +675,6 @@ contract Moon{
         Balance[moonName].smallBalance += smallRewardAmount / FIXED_POINT;
         Balance[moonName].cycleBalance += cycleFeeAmount / FIXED_POINT;
         Balance[moonName].everyoneBalance += everyoneRewardsAmount / FIXED_POINT;
-        payable(teamAddress).transfer(teamFee / FIXED_POINT);
-        if (Users[msg.sender].partnerAddress == address(0)) {
-            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
-        } else {
-            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
-        }
 
         if(Announcement[moonName].queryCount!=0){
             GameToken(Announcement[moonName].GameTokenAddress).distributeCAKEDividends(everyoneRewardsAmount / FIXED_POINT);
@@ -690,6 +690,14 @@ contract Moon{
             Announcement[moonName].SmRewardCount = smallRewardCount;
         }
         Announcement[moonName].SMcount++;
+        uint256 quantitysTokenAmount = 1e18 * _quantity;
+        GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
+        payable(teamAddress).transfer(teamFee / FIXED_POINT);
+        if (Users[msg.sender].partnerAddress == address(0)) {
+            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
+        } else {
+            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
+        }
     }
 
 

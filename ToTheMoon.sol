@@ -1,221 +1,10 @@
 // SPDX-License-Identifier: MIT
-
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 pragma solidity ^0.8.4;
 
 
 
-library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-    unchecked {
-        uint256 c = a + b;
-        if (c < a) return (false, 0);
-        return (true, c);
-    }
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-    unchecked {
-        if (b > a) return (false, 0);
-        return (true, a - b);
-    }
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-    unchecked {
-        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-        // benefit is lost if 'b' is also tested.
-        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-        if (a == 0) return (true, 0);
-        uint256 c = a * b;
-        if (c / a != b) return (false, 0);
-        return (true, c);
-    }
-    }
-
-    /**
-     * @dev Returns the division of two unsigned integers, with a division by zero flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-    unchecked {
-        if (b == 0) return (false, 0);
-        return (true, a / b);
-    }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-    unchecked {
-        if (b == 0) return (false, 0);
-        return (true, a % b);
-    }
-    }
-
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     *
-     * - Addition cannot overflow.
-     */
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a + b;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a - b;
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     *
-     * - Multiplication cannot overflow.
-     */
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a * b;
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers, reverting on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator.
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a / b;
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * reverting when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a % b;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-     * overflow (when the result is negative).
-     *
-     * CAUTION: This function is deprecated because it requires allocating memory for the error
-     * message unnecessarily. For custom revert reasons use {trySub}.
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-    unchecked {
-        require(b <= a, errorMessage);
-        return a - b;
-    }
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers, reverting with custom message on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-    unchecked {
-        require(b > 0, errorMessage);
-        return a / b;
-    }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * reverting with custom message when dividing by zero.
-     *
-     * CAUTION: This function is deprecated because it requires allocating memory for the error
-     * message unnecessarily. For custom revert reasons use {tryMod}.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-    unchecked {
-        require(b > 0, errorMessage);
-        return a % b;
-    }
-    }
-}
 
 interface GameToken{
     /**
@@ -238,7 +27,7 @@ interface GameToken{
 }
 
 
-contract Moon{
+contract Moon is ReentrancyGuard{
     using SafeMath for uint;
     // The start time of the GameDefi sale.
     uint256 public startTime;
@@ -254,8 +43,7 @@ contract Moon{
     uint256 public reserveOut = 1000000e18;
     uint256 public num = 1000001000001001;
     uint256 public cycleprice = 1000e18;
-    bool private _locked;
-    bool private _lockedTwo;
+
 
 
     /**
@@ -385,19 +173,16 @@ contract Moon{
     function stake(
         string memory _billboardName,
         uint256 _quantitys
-    ) public payable{
+    ) public nonReentrant payable{
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(msg.value == getAmountIn(_quantitys),"PRICE ERROR");
         require(bytes(_billboardName).length < 100,"LENGTH ERROR");
-        require(!_locked, "Function is locked");
-
-         _locked = true;
-
+    
         if(endTime != 0 && startTime != 0){
             require(block.timestamp < endTime,"TIME ERROR");
         }
         uint256 currentTimestamp = block.timestamp;
-        //uint256 quantitysTokenAmount = 1e18 * _quantitys;
+        uint256 quantitysTokenAmount = 1e18 * _quantitys;
 
         if(Announcement[moonName].GameDefiCount + _quantitys > 999 && startTime == 0 && endTime == 0){
             startTime = currentTimestamp;
@@ -411,23 +196,21 @@ contract Moon{
         if(partnerAddress != address(0)){
             Users[msg.sender].partnerAddress = partnerAddress;
         }
+        
         buyKey(_quantitys);
+        GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
         Announcement[moonName].GameDefiCount += _quantitys;
         Announcement[moonName].newBuyAddress = msg.sender;
         Announcement[moonName].queryCount = _quantitys;
-        dividends(_quantitys);
-        // uint256 quantitysTokenAmount = 1e18 * _quantitys;
-        // GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
-        _locked = false;
+    
+        dividends();
     }
 
     /**
     @dev Allows a user to reinvest their accumulated dividends into the project by staking additional tokens
     @param BillboardName The name of the billboard the user wishes to stake tokens towards
     */
-    function reinvestmentIncome(string memory BillboardName) external{
-        require(!_lockedTwo, "Function is locked");
-         _lockedTwo = true;
+    function reinvestmentIncome(string memory BillboardName) external nonReentrant{
         if(endTime != 0 && startTime != 0){
             require(block.timestamp < endTime,"TIME ERROR");
         }
@@ -442,7 +225,6 @@ contract Moon{
         Announcement[moonName].queryCount = _quantity;
         getAmountIn(_quantity);
         getreinvestmentIncome(BillboardName,_quantity);
-        _lockedTwo = false;
     }
 
     /**
@@ -464,14 +246,14 @@ contract Moon{
         if(UserBillboardHash[collisionHash] != address(0)){
             Users[msg.sender].partnerAddress = UserBillboardHash[collisionHash];
         }
+        GameToken(Announcement[moonName].GameTokenAddress).mintToken((msg.sender), 1e18 * _quantity);
+        Announcement[moonName].GameDefiCount += _quantity;
         dividend(_quantity);
-        // GameToken(Announcement[moonName].GameTokenAddress).mintToken((msg.sender), 1e18 * _quantity);
-        // Announcement[moonName].GameDefiCount += _quantity;
     }
 
 
     // This function allows a user to withdraw their partner rewards
-    function getPartnerRewards() external{
+    function getPartnerRewards() external nonReentrant{
         require(Users[msg.sender].partnerRewards  > 0,"ERROR");
         uint256 pr = Users[msg.sender].partnerRewards;
         Users[msg.sender].partnerRewards = 0;
@@ -481,7 +263,7 @@ contract Moon{
     /**
      * @dev Allows the user to withdraw their received dividends.
      */
-    function getReceived() external{
+    function getReceived() external nonReentrant{
         require(GameToken(Announcement[moonName].GameTokenAddress).accumulativeDividendOf(msg.sender) > 0,"ERROR");
         require(userReceived()  > 0,"ERROR");
         uint256 rewardsReceived = GameToken(Announcement[moonName].GameTokenAddress).accumulativeDividendOf(msg.sender)
@@ -514,7 +296,7 @@ contract Moon{
     */
     function buybillboard(
         string memory _billboardName
-    ) public payable{
+    ) public nonReentrant payable{
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(bytes(_billboardName).length > 0, "Billboard name cannot be empty");
         require(bytes(_billboardName).length <= 36,"NAME ERROR");
@@ -554,7 +336,7 @@ contract Moon{
         if(Announcement[moonName].billboardCount == 0){
             return Announcement[moonName].billboardPrice;
         }else{
-            return (Announcement[moonName].billboardPrice * 2e8) / 10e8 + Announcement[moonName].billboardPrice;
+            return (Announcement[moonName].billboardPrice * 2e8) / 10e9 + Announcement[moonName].billboardPrice;
         }
     }
 
@@ -566,7 +348,7 @@ contract Moon{
     @notice If the caller of the function is a MultiFee contract, the function calculates the SuperFee rewards and sets the next cycle.
     @notice If the caller of the function is not a MultiFee contract, the function extends the endTime by 1 hour.
     */
-    function helplaunch() public{
+    function helplaunch() public nonReentrant{
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(block.timestamp > endTime,"ERROR TIME");
         require(Announcement[moonName].newBuyAddress != address(0),"ERROR ADDRESS");
@@ -596,7 +378,7 @@ contract Moon{
 
 
     // Allows the user to renew their billboard by paying the current price
-    function renewBillboard() public payable {
+    function renewBillboard() public nonReentrant payable {
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(Users[msg.sender].billboardStatus == true,"ERROR STATUS");
         uint256 newPrice = billboardPriceFactory();
@@ -631,6 +413,12 @@ contract Moon{
         Balance[moonName].cycleBalance += cycleFeeAmount / FIXED_POINT;
         Balance[moonName].everyoneBalance += everyoneRewardsAmount / FIXED_POINT;
 
+        payable(teamAddress).transfer(teamFee / FIXED_POINT);
+        if (Users[msg.sender].partnerAddress == address(0)) {
+            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
+        } else {
+            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
+        }
         if(Announcement[moonName].queryCount!=0){
             GameToken(Announcement[moonName].GameTokenAddress).distributeCAKEDividends(everyoneRewardsAmount / FIXED_POINT);
         }else{
@@ -644,19 +432,12 @@ contract Moon{
             Announcement[moonName].SMRewardsAddress = msg.sender;
             Announcement[moonName].SmRewardCount = smallRewardCount;
         }
+
         Announcement[moonName].SMcount++;
-        uint256 quantitysTokenAmount = 1e18 * _quantitys;
-        GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
-        payable(teamAddress).transfer(teamFee / FIXED_POINT);
-        if (Users[msg.sender].partnerAddress == address(0)) {
-            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
-        } else {
-            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
-        }
     }
 
 
-    function dividends(uint256 _quantity) internal {
+    function dividends() internal {
         uint256 teamRewardsFee = Fee[moonName].teamRewardsFee;
         uint256 partnerRewardsFee = Fee[moonName].partnerRewardsFee;
         uint256 superJackpotFee = Fee[moonName].superJackpotFee;
@@ -675,12 +456,18 @@ contract Moon{
         Balance[moonName].smallBalance += smallRewardAmount / FIXED_POINT;
         Balance[moonName].cycleBalance += cycleFeeAmount / FIXED_POINT;
         Balance[moonName].everyoneBalance += everyoneRewardsAmount / FIXED_POINT;
+        if (Users[msg.sender].partnerAddress == address(0)) {
+            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
+        } else {
+            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
+        }
 
         if(Announcement[moonName].queryCount!=0){
             GameToken(Announcement[moonName].GameTokenAddress).distributeCAKEDividends(everyoneRewardsAmount / FIXED_POINT);
         }else{
             Balance[moonName].superBalance += everyoneRewardsAmount / FIXED_POINT;
         }
+        payable(teamAddress).transfer(teamFee / FIXED_POINT);
         if (isSMFee()) {
             uint256 smallRewardCount = Balance[moonName].smallBalance;
             Balance[moonName].smallBalance = 0;
@@ -690,20 +477,12 @@ contract Moon{
             Announcement[moonName].SmRewardCount = smallRewardCount;
         }
         Announcement[moonName].SMcount++;
-        uint256 quantitysTokenAmount = 1e18 * _quantity;
-        GameToken(Announcement[moonName].GameTokenAddress).mintToken(msg.sender, quantitysTokenAmount);
-        payable(teamAddress).transfer(teamFee / FIXED_POINT);
-        if (Users[msg.sender].partnerAddress == address(0)) {
-            payable(teamAddress).transfer(partnerFee / FIXED_POINT);
-        } else {
-            Users[Users[msg.sender].partnerAddress].partnerRewards += partnerFee / FIXED_POINT;
-        }
     }
 
 
 
     //Allows a user to withdraw their small reward earnings.
-    function withdrawSmallRewards() public{
+    function withdrawSmallRewards() public nonReentrant{
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(Users[msg.sender].SMRewards > 0 ,"No rewards to withdraw.");
         uint256 rewards = Users[msg.sender].SMRewards;
@@ -719,7 +498,7 @@ contract Moon{
     @dev The latest buyer must be correct.
     @dev If applicable, start a new cycle and distribute the jackpot to the latest buyer.
     */
-    function superJackpotReceive() public{
+    function superJackpotReceive() public nonReentrant{
         require(!isContract(msg.sender), "This function can only be called by an externally owned account.");
         require(msg.sender == Announcement[moonName].newBuyAddress,"Sender is not the latest buyer");
         require(block.timestamp > endTime,"Current time is not after end time");
@@ -760,7 +539,7 @@ contract Moon{
         }
     }
 
-    function reviewSuper() public{
+    function reviewSuper() public nonReentrant{
         require(Users[msg.sender].SFRewards > 0,"Error");
         uint256 sr = Users[msg.sender].SFRewards;
         Users[msg.sender].SFRewards = 0;
